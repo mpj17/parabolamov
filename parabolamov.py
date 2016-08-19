@@ -1,21 +1,24 @@
 from matplotlib import pyplot as plt
-import numpy as np
+from numpy import (uint8, fromstring as np_fromstring)
 from moviepy.editor import (ImageClip, concatenate_videoclips)
 
+SIZE = 10
+
 def plot(points):
-    """Plot a list of (x, y) a figure"""
+    """Plot a list of (x, y) points to a matplotlib.pyplot.figure"""
     # Plot the points
-    fig = plt.figure()
+    fig = plt.figure(figsize=(3, 3), dpi=300)
     ax = fig.add_subplot(1, 1, 1)
+    ax.tick_params(labelbottom='off', labelleft='off')
     ax.plot([p[0] for p in points], [p[1] for p in points], '-o')
-    ax.set_xlim(-100, 100)
-    ax.set_ylim(0, 100**2)
+    ax.set_xlim(-SIZE, SIZE)
+    ax.set_ylim(0, SIZE**2)
     fig.canvas.draw()
     return fig
 
 def fig_to_rgb(fig):
-    # Convert the plot to 24-bit RGB data (0-255, 0-255, 0-255)
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+    """Convert the plot to a numpy array of 24-bit RGB data"""
+    data = np_fromstring(fig.canvas.tostring_rgb(), dtype=uint8, sep='')
     retval = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
     return retval
 
@@ -29,13 +32,14 @@ def fig_to_clip(fig, duration=1):
     retval.fps = 60
     return retval
 
-# Generate the points on a parabola
-parabolaPoints = [(x, x**2) for x in range(-100, 101)]
+def figures():
+    # Generate the points on a parabola
+    parabolaPoints = [(x, x**2) for x in range(-SIZE, SIZE+1)]
+    for i in range(0, SIZE*2+1):
+        figure = plot(parabolaPoints[:i+1])
+        yield figure
 
-figures = [plot(parabolaPoints[:l]) for l in
-           range(1, len(parabolaPoints))]
-clips = [fig_to_clip(fig, 0.1) for fig in figures]
-figures = None
-composite = concatenate_videoclips(clips)
-# Write the clip to a file
-composite.write_videofile('foo.mp4')
+if __name__ == '__main__':
+    clips = [fig_to_clip(fig, 1) for fig in figures()]
+    composite = concatenate_videoclips(clips)
+    composite.write_videofile('foo.mp4')
