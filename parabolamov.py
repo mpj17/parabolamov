@@ -1,17 +1,19 @@
 from matplotlib import pyplot as plt
 import numpy as np
-from moviepy.editor import ImageClip
+from moviepy.editor import (ImageClip, concatenate_videoclips)
 
 
 # Generate the points on a parabola
-parabolaPoints = [(x, x**2) for x in range(-10, 10)]
+parabolaPoints = [(x, x**2) for x in range(-100, 101)]
 
 def points_to_image(points, duration=1):
     """Plot a list of (x, y) points to an ImageClip of given duration"""
     # Plot the points
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    ax.scatter([p[0] for p in points], [p[1] for p in points])
+    ax.plot([p[0] for p in points], [p[1] for p in points], '-o')
+    ax.set_xlim(-100, 100)
+    ax.set_ylim(0, 100**2)
     fig.canvas.draw()
     
     # Convert the plot to 24-bit RGB data (0-255, 0-255, 0-255)
@@ -24,6 +26,8 @@ def points_to_image(points, duration=1):
     retval.fps = 60
     return retval
 
-i = points_to_image(parabolaPoints)
+clips = [points_to_image(parabolaPoints[:l], 0.1) for l in
+         range(1, len(parabolaPoints))]
+composite = concatenate_videoclips(clips)
 # Write the clip to a file
-i.write_gif('foo.gif')
+composite.write_videofile('foo.mp4')
