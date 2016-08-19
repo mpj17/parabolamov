@@ -1,0 +1,13 @@
+syntax: glob
+*pyc
+*~
+*egg-info
+bin
+dist
+include
+lib
+__pycache__
+share
+*orig
+.ipynb_checkpoints
+pip-selfcheck.json
