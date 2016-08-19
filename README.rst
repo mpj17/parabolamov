@@ -13,7 +13,7 @@ and concatenates them together into `the movie
 Requirements
 ============
 
-This is a Python 3 project, that only requires products on
+This is a Python 3 project that only requires products on
 PyPI. Clone this project, turn the directory into a Python 3
 virtual environment, install its dependencies, and run the
 script::
