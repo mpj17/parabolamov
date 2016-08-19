@@ -40,6 +40,6 @@ def fig_to_clip(fig, duration=1):
     return retval
 
 if __name__ == '__main__':
-    clips = [fig_to_clip(fig, 1) for fig in figures()]
+    clips = [fig_to_clip(fig, 0.1) for fig in figures()]
     composite = concatenate_videoclips(clips)
     composite.write_videofile('foo.mp4')
